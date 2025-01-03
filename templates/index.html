@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Bordes y Objetos</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .video-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            width: 90%;
+            max-width: 800px;
+        }
+        .video-item img {
+            width: 100%;
+            height: auto;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 20px;
+        }
+        .slider-value {
+            font-weight: bold;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detección de Bordes y Objetos con OpenCV</h1>
+    <div class="video-container">
+        <div class="video-item">
+            <h3>Video Original</h3>
+            <img id="original-video" src="/video_original" alt="Video original">
+        </div>
+        <div class="video-item">
+            <h3>Video Procesado (Bordes)</h3>
+            <img id="processed-video" src="/video_processed" alt="Video procesado">
+        </div>
+        <div class="video-item">
+            <h3>Video Procesado (Objetos Detectados)</h3>
+            <img id="object-detection" src="/video_objects" alt="Video de objetos detectados">
+        </div>
+    </div>
+    <div class="controls">
+        <label for="low-threshold">Umbral Bajo (Bordes):</label>
+        <input type="range" id="low-threshold" min="0" max="255" value="50" step="1">
+        <span id="low-threshold-value" class="slider-value">50</span>
+        <br>
+        <label for="high-threshold">Umbral Alto (Bordes):</label>
+        <input type="range" id="high-threshold" min="0" max="255" value="150" step="1">
+        <span id="high-threshold-value" class="slider-value">150</span>
+        <br>
+        <label for="scale-factor">Sensibilidad Detección de Objetos:</label>
+        <input type="range" id="scale-factor" min="1" max="2" step="0.1" value="1.1">
+        <span id="scale-factor-value" class="slider-value">1.1</span>
+    </div>
+
+    <script>
+        // Función para enviar los nuevos valores de los umbrales y la sensibilidad al servidor
+        function updateThresholds() {
+            const lowThreshold = document.getElementById('low-threshold').value;
+            const highThreshold = document.getElementById('high-threshold').value;
+            const scaleFactor = document.getElementById('scale-factor').value;
+
+            fetch(`/update_thresholds?low=${lowThreshold}&high=${highThreshold}&scale=${scaleFactor}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Parámetros actualizados:', data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Actualización automática cuando se cambia el valor de un slider
+        document.getElementById('low-threshold').addEventListener('input', function() {
+            document.getElementById('low-threshold-value').innerText = this.value;
+            updateThresholds();
+        });
+
+        document.getElementById('high-threshold').addEventListener('input', function() {
+            document.getElementById('high-threshold-value').innerText = this.value;
+            updateThresholds();
+        });
+
+        document.getElementById('scale-factor').addEventListener('input', function() {
+            document.getElementById('scale-factor-value').innerText = this.value;
+            updateThresholds();
+        });
+    </script>
+</body>
+</html>
